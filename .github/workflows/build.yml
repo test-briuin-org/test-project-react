@@ -56,6 +56,12 @@ jobs:
         env:
           VITE_BASE_PATH: /developer/test-project-react/
 
+      - name: Upload development build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-development
+          path: dist/  # Adjust this path to match your build output directory
+
   build-staging:
     needs: install-dependencies
     runs-on: ubuntu-latest
@@ -78,54 +84,36 @@ jobs:
         env:
           VITE_BASE_PATH: /test-project-react/
 
+      - name: Upload staging build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-staging
+          path: dist/  # Adjust this path to match your build output directory
+
   deploy-staging:
     needs: build-staging
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_target == 'staging'
     steps:
-      - uses: actions/checkout@v4
+      - name: Download staging build artifact
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build staging
-        run: npm run build:staging
-        env:
-          VITE_BASE_PATH: /test-project-react/
+          name: build-staging
+          path: dist/
 
       - name: Deploy to Staging
-        run: echo "Deploying to staging environment"  # Replace with actual deploy command
+        run: echo "Deploying to staging environment from dist/"  # Replace with actual deploy command
 
   deploy-development:
     needs: build-development
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_target == 'development'
     steps:
-      - uses: actions/checkout@v4
+      - name: Download development build artifact
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build stagingdev
-        run: npm run build:stagingdev
-        env:
-          VITE_BASE_PATH: /developer/test-project-react/
+          name: build-development
+          path: dist/
 
       - name: Deploy to Development
-        run: echo "Deploying to development environment"  # Replace with actual deploy command
+        run: echo "Deploying to development environment from dist/"  # Replace with actual deploy command
