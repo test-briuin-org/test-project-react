@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build
 
 on:
   push:
@@ -7,7 +7,24 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  install-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+  build-development:
+    needs: install-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,10 +45,24 @@ jobs:
         env:
           VITE_BASE_PATH: /developer/test-project-react/
 
+  build-staging:
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build staging
         run: npm run build:staging
         env:
           VITE_BASE_PATH: /test-project-react/
-
-      - name: Run tests with coverage
-        run: npm run test:coverage 
