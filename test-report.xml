@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="2" failures="0" errors="0" time="0.018811125">
+    <testsuite name="src/App.test.tsx" timestamp="2025-03-30T13:55:37.880Z" hostname="Edwards-Laptop.local" tests="2" failures="0" errors="0" skipped="0" time="0.018811125">
+        <testcase classname="src/App.test.tsx" name="App Component &gt; renders without crashing" time="0.0100595">
+        </testcase>
+        <testcase classname="src/App.test.tsx" name="App Component &gt; renders the main heading" time="0.008116625">
+        </testcase>
+    </testsuite>
+</testsuites>
