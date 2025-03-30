@@ -24,9 +24,10 @@ export default defineConfig({
       ],
     },
     include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
-    reporters: ['default', 'junit'],
-    outputFile: {
-      junit: './test-report.xml'
-    }
+    reporters: ['default', ['vitest-sonar-reporter', {
+      outputFile: './test-report.xml',
+      outputDirectory: './',
+      reportName: 'test-report.xml'
+    }]]
   },
 })
