@@ -1,6 +1,6 @@
 <testExecutions version="1">
   <file path="src/App.test.tsx">
-    <testCase name="App Component - renders without crashing" duration="10" />
+    <testCase name="App Component - renders without crashing" duration="9" />
     <testCase name="App Component - renders the main heading" duration="7" />
   </file>
 </testExecutions>
