@@ -36,8 +36,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=test-project-react
-            -Dsonar.organization=YOUR_ORGANIZATION_KEY
+            -Dsonar.projectKey=${{ github.repository }}
+            -Dsonar.organization=${{ github.repository_owner }}
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=**/*.test.tsx,**/*.test.ts
