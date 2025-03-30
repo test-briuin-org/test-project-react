@@ -15,7 +15,14 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'src/test/setup.ts',
+        '**/*.d.ts',
+        '**/*.test.{js,jsx,ts,tsx}',
+        '**/*.config.{js,ts}',
+      ],
+      include: [
+        'src/**/*.{js,jsx,ts,tsx}',
       ],
     },
+    include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
   },
 })
