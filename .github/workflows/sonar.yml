@@ -1,4 +1,4 @@
-name: SonarQube Analysis
+name: SonarCloud
 
 on:
   push:
@@ -26,13 +26,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=test-project-react
+            -Dsonar.organization=YOUR_ORGANIZATION_KEY
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=**/*.test.tsx,**/*.test.ts
