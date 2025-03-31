@@ -28,12 +28,26 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetch last two commits to compare changes
+
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "npm"  # Cache npm dependencies based on package-lock.json
+
+      - name: Check if package-lock.json Changed
+        id: check-lockfile
+        run: |
+          if git diff HEAD^ HEAD -- package-lock.json | grep -q .; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install Dependencies
+        if: steps.check-lockfile.outputs.changed == 'true'
         run: npm ci
 
   build-and-test:
@@ -45,13 +59,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
+
       - name: Install Dependencies
+        if: steps.check-lockfile.outputs.changed == 'true'  # Use cached node_modules if unchanged
         run: npm ci
+
       - name: Build for ${{ matrix.env }}
         env:
           VITE_APP_ENV: ${{ matrix.env }}
@@ -68,12 +86,15 @@ jobs:
           else
             npm run build
           fi
+
       - name: Run SAST
         if: matrix.env == 'test'
         run: echo "RUN SAST"
+
       - name: Run Unit Tests
         if: matrix.env == 'test'
         run: echo "RUN UNIT TESTS"
+
       - name: Run Cypress Tests
         if: matrix.env == 'test'
         uses: cypress-io/github-action@v6
@@ -84,6 +105,7 @@ jobs:
           config: baseUrl=http://localhost:3000
         env:
           CYPRESS_ENV: ${{ matrix.env }}
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -97,13 +119,14 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment }}
     permissions:
-      contents: write  # Added to grant write access
+      contents: write
     steps:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: build-${{ github.event.inputs.environment }}
           path: dist
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
