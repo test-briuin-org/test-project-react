@@ -72,7 +72,7 @@ jobs:
           elif [ "${{ matrix.env }}" = "staging" ]; then
             npm run build:staging
           else
-            npm run build --mode ${{ matrix.env }}
+            npm run build
           fi
 
       - name: Run SAST
