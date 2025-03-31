@@ -67,8 +67,13 @@ jobs:
           REACT_APP_ENV: ${{ matrix.env }}
           REACT_APP_API_URL: ${{ vars[format('API_URL_{0}', matrix.env)] }}
         run: |
-          mkdir -p dist-${{ matrix.env }}
-          npm run build -- --output-path=dist-${{ matrix.env }}
+          if [ "${{ matrix.env }}" = "development" ]; then
+            npm run build:stagingdev
+          elif [ "${{ matrix.env }}" = "staging" ]; then
+            npm run build:staging
+          else
+            npm run build --mode ${{ matrix.env }}
+          fi
 
       - name: Run SAST
         run: npm run lint  # Replace with your SAST tool if different
@@ -90,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.env }}
-          path: dist-${{ matrix.env }}
+          path: dist/  # Vite default output directory
           retention-days: 5
 
   # Job 3: Deploy (Manual, selected environment)
