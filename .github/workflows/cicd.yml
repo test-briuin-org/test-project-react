@@ -1,0 +1,102 @@
+name: CI/CD Pipeline for React Project
+# Triggers
+on:
+ push:
+   branches:
+     - '*'
+ pull_request:
+   branches:
+     - '*'
+ workflow_dispatch:
+   inputs:
+     environment:
+       description: 'Environment to deploy to'
+       required: true
+       type: choice
+       options:
+         - test
+         - development
+         - staging
+         - production
+# Global environment variables
+env:
+ NODE_VERSION: '18.x'
+# Jobs
+jobs:
+ # Job 1: Build and Test (Automated)
+ build-and-test:
+   runs-on: ubuntu-latest
+   strategy:
+     matrix:
+       env: [test, development, staging, production]
+   steps:
+     # Step 1: Checkout code
+     - name: Checkout Code
+       uses: actions/checkout@v4
+     # Step 2: Set up Node.js
+     - name: Set Up Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: ${{ env.NODE_VERSION }}
+         cache: 'npm'
+     # Step 3: Install dependencies
+     - name: Install Dependencies
+       run: npm ci
+     # Step 4: Build for each environment
+     - name: Build for ${{ matrix.env }}
+       env:
+         REACT_APP_ENV: ${{ matrix.env }}
+         REACT_APP_API_URL: ${{ vars[format('API_URL_{0}', matrix.env)] }}
+       run: |
+         mkdir -p dist-${{ matrix.env }}
+         npm run build -- --output-path=dist-${{ matrix.env }}
+     # Step 5: Run SAST (Static Analysis)
+     - name: Run SAST
+       run: npm run lint  # Replace with your SAST tool (e.g., CodeQL, SonarQube)
+     # Step 6: Run Unit Tests
+     - name: Run Unit Tests
+       run: npm test -- --ci --maxWorkers=2
+     # Step 7: Run Cypress Tests
+     - name: Run Cypress Tests
+       uses: cypress-io/github-action@v6
+       with:
+         browser: chrome
+         start: npm start
+         wait-on: 'http://localhost:3000'
+         config: baseUrl=http://localhost:3000
+       env:
+         CYPRESS_ENV: ${{ matrix.env }}
+     # Step 8: Upload build artifacts
+     - name: Upload Build Artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: build-${{ matrix.env }}
+         path: dist-${{ matrix.env }}
+         retention-days: 5
+ # Job 2: Deploy (Manual)
+ deploy:
+   runs-on: ubuntu-latest
+   needs: build-and-test
+   if: github.event_name == 'workflow_dispatch'
+   environment: ${{ github.event.inputs.environment }}
+   steps:
+     # Step 1: Checkout code (optional, for deployment scripts)
+     - name: Checkout Code
+       uses: actions/checkout@v4
+     # Step 2: Download build artifact
+     - name: Download Build Artifact
+       uses: actions/download-artifact@v4
+       with:
+         name: build-${{ github.event.inputs.environment }}
+         path: dist
+     # Step 3: Deploy to selected environment
+     - name: Deploy to ${{ github.event.inputs.environment }}
+       env:
+         DEPLOY_SERVER: ${{ secrets[format('DEPLOY_SERVER_{0}', github.event.inputs.environment)] }}
+         DEPLOY_USER: ${{ secrets[format('DEPLOY_USER_{0}', github.event.inputs.environment)] }}
+         DEPLOY_KEY: ${{ secrets[format('DEPLOY_KEY_{0}', github.event.inputs.environment)] }}
+       run: |
+         echo "$DEPLOY_KEY" > deploy_key
+         chmod 600 deploy_key
+         rsync -avz --progress -e "ssh -i deploy_key -o StrictHostKeyChecking=no" dist/ ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_SERVER }}:/path/to/deploy/${{ github.event.inputs.environment }}
+         rm deploy_key
