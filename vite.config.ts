@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_BASE_PATH,
     plugins: [react()],
+    server: {
+      port: 3000, // Change the port here
+    },
     test: {
       globals: true,
       environment: 'jsdom',
