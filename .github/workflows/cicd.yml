@@ -4,14 +4,14 @@ name: CI/CD Pipeline for React Project
 on:
   push:
     branches:
-      - '*'
+      - "*"
   pull_request:
     branches:
-      - '*'
+      - "*"
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy to'
+        description: "Environment to deploy to"
         required: true
         type: choice
         options:
@@ -22,7 +22,7 @@ on:
 
 # Global environment variables
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: "20.x"
 
 # Jobs
 jobs:
@@ -37,7 +37,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -57,20 +57,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build for ${{ matrix.env }}
         env:
-          VITE_APP_ENV: ${{ matrix.env }}  # Updated to VITE_ prefix for Vite
+          VITE_APP_ENV: ${{ matrix.env }}
           VITE_APP_API_URL: ${{ vars[format('API_URL_{0}', matrix.env)] }}
         run: |
           if [ "${{ matrix.env }}" = "development" ]; then
             npm run build:stagingdev
           elif [ "${{ matrix.env }}" = "staging" ]; then
             npm run build:staging
+          elif [ "${{ matrix.env }}" = "test" ]; then
+            npm run build:test
+          elif [ "${{ matrix.env }}" = "production" ]; then
+            npm run build:prod
           else
             npm run build
           fi
@@ -78,11 +82,11 @@ jobs:
       # Test-related steps only for 'test' environment
       - name: Run SAST
         if: matrix.env == 'test'
-        run: echo "RUN SAST"  # Replace with actual SAST command when ready
+        run: echo "RUN SAST" # Replace with actual SAST command when ready
 
       - name: Run Unit Tests
         if: matrix.env == 'test'
-        run: echo "RUN UNIT TESTS"  # Replace with actual test command when ready
+        run: echo "RUN UNIT TESTS" # Replace with actual test command when ready
 
       - name: Run Cypress Tests
         if: matrix.env == 'test'
@@ -90,7 +94,7 @@ jobs:
         with:
           browser: chrome
           start: npm run dev
-          wait-on: 'http://localhost:3000'  # Vite default port
+          wait-on: "http://localhost:3000"
           config: baseUrl=http://localhost:3000
         env:
           CYPRESS_ENV: ${{ matrix.env }}
@@ -99,10 +103,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.env }}
-          path: dist/  # Vite default output directory
+          path: dist/
           retention-days: 5
 
-  # Job 3: Deploy (Manual, selected environment)
+  # Job 3: Deploy to GitHub Pages Root (Manual, selected environment)
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -115,13 +119,9 @@ jobs:
           name: build-${{ github.event.inputs.environment }}
           path: dist
 
-      - name: Deploy to ${{ github.event.inputs.environment }}
-        env:
-          DEPLOY_SERVER: ${{ secrets[format('DEPLOY_SERVER_{0}', github.event.inputs.environment)] }}
-          DEPLOY_USER: ${{ secrets[format('DEPLOY_USER_{0}', github.event.inputs.environment)] }}
-          DEPLOY_KEY: ${{ secrets[format('DEPLOY_KEY_{0}', github.event.inputs.environment)] }}
-        run: |
-          echo "$DEPLOY_KEY" > deploy_key
-          chmod 600 deploy_key
-          rsync -avz --progress -e "ssh -i deploy_key -o StrictHostKeyChecking=no" dist/ ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_SERVER }}:/path/to/deploy/${{ github.event.inputs.environment }}
-          rm deploy_key
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
+          # No destination_dir specified, so it deploys to the root of gh-pages branch

@@ -1,6 +1,108 @@
 <testExecutions version="1">
   <file path="src/App.test.tsx">
-    <testCase name="App Component - renders without crashing" duration="11" />
-    <testCase name="App Component - renders the main heading" duration="7" />
+    <testCase name="App Component - renders without crashing" duration="10" />
+    <testCase name="App Component - renders the main heading" duration="11">
+      <error message="Unable to find an element with the text: Vite + React + TypeScript + Tailwind. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;div[39m
+      [33mclass[39m=[32m&quot;min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12&quot;[39m
+    [36m&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;relative py-3 sm:max-w-xl sm:mx-auto&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;div[39m
+          [33mclass[39m=[32m&quot;relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;max-w-md mx-auto&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;div[39m
+              [33mclass[39m=[32m&quot;divide-y divide-gray-200&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;div[39m
+                [33mclass[39m=[32m&quot;py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7&quot;[39m
+              [36m&gt;[39m
+                [36m&lt;h1[39m
+                  [33mclass[39m=[32m&quot;text-3xl font-bold text-center mb-8 text-indigo-600&quot;[39m
+                [36m/&gt;[39m
+                [36m&lt;p[39m
+                  [33mclass[39m=[32m&quot;text-center text-gray-600&quot;[39m
+                [36m&gt;[39m
+                  [0mEdit [0m
+                  [36m&lt;code[39m
+                    [33mclass[39m=[32m&quot;text-sm font-bold text-gray-800&quot;[39m
+                  [36m&gt;[39m
+                    [0msrc/App.tsx[0m
+                  [36m&lt;/code&gt;[39m
+                  [0m and save to test HMR[0m
+                [36m&lt;/p&gt;[39m
+              [36m&lt;/div&gt;[39m
+            [36m&lt;/div&gt;[39m
+          [36m&lt;/div&gt;[39m
+        [36m&lt;/div&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/div&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m">
+        <![CDATA[TestingLibraryElementError: Unable to find an element with the text: Vite + React + TypeScript + Tailwind. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;div[39m
+      [33mclass[39m=[32m&quot;min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12&quot;[39m
+    [36m&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;relative py-3 sm:max-w-xl sm:mx-auto&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;div[39m
+          [33mclass[39m=[32m&quot;relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;max-w-md mx-auto&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;div[39m
+              [33mclass[39m=[32m&quot;divide-y divide-gray-200&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;div[39m
+                [33mclass[39m=[32m&quot;py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7&quot;[39m
+              [36m&gt;[39m
+                [36m&lt;h1[39m
+                  [33mclass[39m=[32m&quot;text-3xl font-bold text-center mb-8 text-indigo-600&quot;[39m
+                [36m/&gt;[39m
+                [36m&lt;p[39m
+                  [33mclass[39m=[32m&quot;text-center text-gray-600&quot;[39m
+                [36m&gt;[39m
+                  [0mEdit [0m
+                  [36m&lt;code[39m
+                    [33mclass[39m=[32m&quot;text-sm font-bold text-gray-800&quot;[39m
+                  [36m&gt;[39m
+                    [0msrc/App.tsx[0m
+                  [36m&lt;/code&gt;[39m
+                  [0m and save to test HMR[0m
+                [36m&lt;/p&gt;[39m
+              [36m&lt;/div&gt;[39m
+            [36m&lt;/div&gt;[39m
+          [36m&lt;/div&gt;[39m
+        [36m&lt;/div&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/div&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m
+    at Object.getElementError (/Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at /Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+    at /Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+    at /Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+    at /Users/edwardlim/Projects/Briuin/test-project-react/src/App.test.tsx:13:28
+    at file:///Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@vitest/runner/dist/index.js:182:14
+    at file:///Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@vitest/runner/dist/index.js:573:28
+    at file:///Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@vitest/runner/dist/index.js:64:24
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///Users/edwardlim/Projects/Briuin/test-project-react/node_modules/@vitest/runner/dist/index.js:41:12)]]>
+      </error>
+    </testCase>
   </file>
 </testExecutions>
