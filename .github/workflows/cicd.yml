@@ -1,6 +1,5 @@
 name: CI/CD Pipeline for React Project
 
-# Triggers
 on:
   push:
     branches:
@@ -20,29 +19,23 @@ on:
           - staging
           - production
 
-# Global environment variables
 env:
   NODE_VERSION: "20.x"
 
-# Jobs
 jobs:
-  # Job 1: Install Dependencies (Shared setup)
   install-dependencies:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-
       - name: Install Dependencies
         run: npm ci
 
-  # Job 2: Build and Test (Automated, per environment)
   build-and-test:
     needs: install-dependencies
     runs-on: ubuntu-latest
@@ -52,16 +45,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-
       - name: Install Dependencies
         run: npm ci
-
       - name: Build for ${{ matrix.env }}
         env:
           VITE_APP_ENV: ${{ matrix.env }}
@@ -78,16 +68,12 @@ jobs:
           else
             npm run build
           fi
-
-      # Test-related steps only for 'test' environment
       - name: Run SAST
         if: matrix.env == 'test'
-        run: echo "RUN SAST" # Replace with actual SAST command when ready
-
+        run: echo "RUN SAST"
       - name: Run Unit Tests
         if: matrix.env == 'test'
-        run: echo "RUN UNIT TESTS" # Replace with actual test command when ready
-
+        run: echo "RUN UNIT TESTS"
       - name: Run Cypress Tests
         if: matrix.env == 'test'
         uses: cypress-io/github-action@v6
@@ -98,7 +84,6 @@ jobs:
           config: baseUrl=http://localhost:3000
         env:
           CYPRESS_ENV: ${{ matrix.env }}
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -106,22 +91,21 @@ jobs:
           path: dist/
           retention-days: 5
 
-  # Job 3: Deploy to GitHub Pages Root (Manual, selected environment)
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment }}
+    permissions:
+      contents: write  # Added to grant write access
     steps:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: build-${{ github.event.inputs.environment }}
           path: dist
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: dist
-          # No destination_dir specified, so it deploys to the root of gh-pages branch
