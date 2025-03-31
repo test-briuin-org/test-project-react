@@ -29,13 +29,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Fetch last two commits to compare changes
+          fetch-depth: 2
 
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"  # Cache npm dependencies based on package-lock.json
+          cache: "npm"
 
       - name: Check if package-lock.json Changed
         id: check-lockfile
@@ -44,6 +44,14 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify Cache Restore
+        run: |
+          if [ -d "node_modules" ]; then
+            echo "node_modules found, likely restored from cache"
+          else
+            echo "node_modules not found, will install dependencies"
           fi
 
       - name: Install Dependencies
@@ -66,8 +74,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Verify Cache Restore
+        run: |
+          if [ -d "node_modules" ]; then
+            echo "node_modules found, likely restored from cache"
+          else
+            echo "node_modules not found, will install dependencies"
+          fi
+
       - name: Install Dependencies
-        if: steps.check-lockfile.outputs.changed == 'true'  # Use cached node_modules if unchanged
+        if: steps.check-lockfile.outputs.changed == 'true'
         run: npm ci
 
       - name: Build for ${{ matrix.env }}
