@@ -154,8 +154,8 @@ jobs:
       - name: Debug dist Contents
         run: ls -la dist || echo "dist is empty"
 
-      - name: Add Timestamp File
-        run: echo "$(date)" > dist/timestamp.txt
+      - name: Add Environment Marker
+        run: echo "<h1>Environment: ${{ github.event.inputs.environment }} - $(date)</h1>" > dist/debug.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
