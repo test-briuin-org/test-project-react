@@ -46,16 +46,17 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Verify Cache Restore
+      - name: Check if node_modules Exists
+        id: check-node-modules
         run: |
           if [ -d "node_modules" ]; then
-            echo "node_modules found, likely restored from cache"
+            echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "node_modules not found, will install dependencies"
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Install Dependencies
-        if: steps.check-lockfile.outputs.changed == 'true'
+        if: steps.check-lockfile.outputs.changed == 'true' || steps.check-node-modules.outputs.exists == 'false'
         run: npm ci
 
   build-and-test:
@@ -74,16 +75,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
-      - name: Verify Cache Restore
+      - name: Check if node_modules Exists
+        id: check-node-modules
         run: |
           if [ -d "node_modules" ]; then
-            echo "node_modules found, likely restored from cache"
+            echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "node_modules not found, will install dependencies"
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Install Dependencies
-        if: steps.check-lockfile.outputs.changed == 'true'
+        if: steps.check-lockfile.outputs.changed == 'true' || steps.check-node-modules.outputs.exists == 'false'
         run: npm ci
 
       - name: Build for ${{ matrix.env }}
