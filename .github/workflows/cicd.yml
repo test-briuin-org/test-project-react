@@ -64,8 +64,8 @@ jobs:
 
       - name: Build for ${{ matrix.env }}
         env:
-          REACT_APP_ENV: ${{ matrix.env }}
-          REACT_APP_API_URL: ${{ vars[format('API_URL_{0}', matrix.env)] }}
+          VITE_APP_ENV: ${{ matrix.env }}  # Updated to VITE_ prefix for Vite
+          VITE_APP_API_URL: ${{ vars[format('API_URL_{0}', matrix.env)] }}
         run: |
           if [ "${{ matrix.env }}" = "development" ]; then
             npm run build:stagingdev
@@ -75,18 +75,22 @@ jobs:
             npm run build
           fi
 
+      # Test-related steps only for 'test' environment
       - name: Run SAST
-        run: echo "RUN SAST"
+        if: matrix.env == 'test'
+        run: echo "RUN SAST"  # Replace with actual SAST command when ready
 
       - name: Run Unit Tests
-        run: echo "RUN UNIT TESTS"
+        if: matrix.env == 'test'
+        run: echo "RUN UNIT TESTS"  # Replace with actual test command when ready
 
       - name: Run Cypress Tests
+        if: matrix.env == 'test'
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           start: npm run dev
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:3000'  # Vite default port
           config: baseUrl=http://localhost:3000
         env:
           CYPRESS_ENV: ${{ matrix.env }}
